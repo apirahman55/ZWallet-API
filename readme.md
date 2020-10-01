@@ -26,6 +26,7 @@ Saat ini <strong>ZWallet API</strong> dibuat hanya dengan <strong>Javascript, No
 Download the projects: 
 ```
 ~$ git clone https://github.com/userexynos/ZWallet-API
-		
+~$ cd ZWallet-API
+~$ npm install
 ```
 
