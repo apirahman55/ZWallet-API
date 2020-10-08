@@ -1,6 +1,6 @@
 <h1 align="center">
-	<a href="https://zwallet-project.netlify.app/">
-		ZWallet App
+	<a href="https://documenter.getpostman.com/view/8840201/TVRd9rNF">
+		ZWallet API
 	</a>
 </h1>
 
@@ -26,6 +26,6 @@ Saat ini <strong>ZWallet API</strong> dibuat hanya dengan <strong>Javascript, No
 Download the projects: 
 ```
 ~$ git clone https://github.com/userexynos/ZWallet-API
-		
-```
-
+~$ cd ZWallet-API
+~$ npm install
+``
