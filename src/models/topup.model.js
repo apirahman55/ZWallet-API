@@ -1,51 +1,24 @@
-const db = require('../configs/database.config')
+const query = require('../helpers/query.helper')
 
 class TopUp {
     getAllTopup() {
-        return new Promise((resolve, reject) => {
-            db.query(`SELECT * FROM topup`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+        return query("SELECT * FROM topup")
     }
 
     getTopup(id) {
-        return new Promise((resolve, reject) => {
-            db.query(`SELECT * FROM topup WHERE id=${id}`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+        return query("SELECT * FROM topup WHERE id = ?", [id])
     }
 
     deleteTopup(id) {
-        return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM topup WHERE id=${id}`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+        return query("DELETE FROM topup WHERE id = ?", [id])
     }
 
     insertTopup(data) {
-        const { detail } = data
-
-        return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO topup (detail) VALUES ('${detail}')`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+        return query("INSERT INTO topup SET ?", [data])
     }
 
     updateTopup(data, id) {
-        return new Promise((resolve, reject) => {
-            db.query(`UPDATE topup SET detail='${data.detail}' WHERE id=${id}`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+        return query("UPDATE topup SET ? WHERE id = ?", [data, id])
     }
 }
 

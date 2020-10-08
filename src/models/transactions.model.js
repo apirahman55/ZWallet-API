@@ -1,61 +1,38 @@
 const db = require('../configs/database.config')
+const query = require('../helpers/query.helper')
 
 class Transactions {
     getTransactions() {
-        return new Promise((resolve, reject) => {
-            db.query(`SELECT a.id, a.note, a.total, b.name AS _from, c.name AS _to FROM transactions AS a INNER JOIN users AS b ON a.id_from_user = b.id INNER JOIN users AS c ON a.id_to_user = c.id`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+        return query("SELECT a.id, a.note, a.total, b.name AS _from, c.name AS _to FROM transactions AS a INNER JOIN users AS b ON a.id_from_user = b.id INNER JOIN users AS c ON a.id_to_user = c.id")
     }
 
     getTransaction(id) {
-        return new Promise((resolve, reject) => {
-            db.query(`SELECT id FROM transactions WHERE id='${id}'`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+        return query("SELECT id FROM transactions WHERE id = ?", [id])
     }
 
 
-    getTransactionsByUserid(user_id) {
-        return new Promise((resolve, reject) => {
-            db.query(`SELECT a.id, a.note, a.total, b.name AS _from, c.name AS _to FROM transactions AS a INNER JOIN users AS b ON a.id_from_user = b.id INNER JOIN users AS c ON a.id_to_user = c.id WHERE a.id_from_user = ${user_id} OR a.id_to_user= ${user_id}`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+    getAllTransactionsByUserid(id) {
+        return query("SELECT a.id, a.note, a.total, b.name AS from_name, c.name AS to_name, b.email AS from_email, c.email AS to_email, a.created_at FROM transactions AS a INNER JOIN users AS b ON a.id_from_user = b.id INNER JOIN users AS c ON a.id_to_user = c.id WHERE a.id_from_user = ? OR a.id_to_user = ?", [id, id])
+    }
+
+    getTransactionsByUserid(id) {
+        return query("SELECT a.id, a.note, a.total, b.name AS from_name, c.name AS to_name, b.email AS from_email, c.email AS to_email, a.created_at FROM transactions AS a INNER JOIN users AS b ON a.id_from_user = b.id INNER JOIN users AS c ON a.id_to_user = c.id WHERE a.id_from_user = ? OR a.id_to_user = ? LIMIT 5", [id, id])
+    }
+
+    getTransactionsByid(id) {
+        return query("SELECT a.id, a.note, a.total, c.phone, c.photo, c.name, c.email, a.created_at FROM transactions AS a INNER JOIN users AS b ON a.id_from_user = b.id INNER JOIN users AS c ON a.id_to_user = c.id WHERE a.id = ?", [id])
     }
 
     insertTransactions(data) {
-        const { id_from, id_to, note, total } = data
-        return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO transactions (id_from_user, id_to_user, note, total) VALUES (${id_from}, ${id_to}, '${note}', '${total}')`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
+        return query("INSERT INTO transactions SET ?", data)
     }
 
     updateTransactionData(data, id) {
-        return new Promise((resolve, reject) => {
-            db.query(`UPDATE transactions SET note='${data.note}' WHERE id=${id}`, (error, result) => {
-                if (error) reject(error)
-                resolve(result)
-            })
-        })
-    } e
+        return query("UPDATE transactions SET ?' WHERE id = ?", [data, id])
+    }
 
     deleteTransaction(id) {
-        return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM transactions WHERE id=${id}`, (error, result) => {
-                if (error) reject(error)
-                console.log(result)
-                resolve(result)
-            })
-        })
+        return query("DELETE FROM transactions WHERE id = ?", [id])
     }
 }
 
