@@ -4,6 +4,9 @@ const { validationResult } = require('express-validator');
 const { verify } = require('jsonwebtoken')
 const { getAllTransactionsByUserid, getTransactionsByUserid, getTransactionsByid, insertTransactions } = require('../models/transactions.model')
 const { compareSync, hashSync, genSaltSync } = require('bcryptjs')
+const multer = require('multer');
+const upload = require("../helpers/multer.helper")
+
 
 class Users {
   async getAllUsers(req, res) {
@@ -52,7 +55,6 @@ class Users {
       })
     }
   }
-
 
   async getUsersPaginate(req, res) {
     const { offset, limit } = req.query
@@ -162,12 +164,12 @@ class Users {
   }
 
   async findUsersData(req, res) {
-    const { q } = req.query
+    const { q, limit, offset } = req.query
     const bearerToken = req.headers['authorization'].split(' ')[1]
     const decoded = verify(bearerToken, process.env.SECRET)
 
     try {
-      const data = await findUsers(q)
+      const data = await findUsers(q, limit, offset)
 
       const filter = data.filter(item => item.id !== decoded.id)
       if (filter.length) {
@@ -270,11 +272,12 @@ class Users {
   }
 
   async getAllHistoryByUserId(req, res) {
+    const { limit, offset } = req.query
     const bearerToken = req.headers['authorization'].split(' ')[1]
     const decoded = verify(bearerToken, process.env.SECRET)
 
     try {
-      const data = await getAllTransactionsByUserid(decoded.id)
+      const data = await getAllTransactionsByUserid(decoded.id, limit, offset)
       if (!data.length)
         return res.status(status.OK).json({
           status: true,
@@ -288,6 +291,7 @@ class Users {
         data
       })
     } catch (error) {
+      console.log(error)
       res.status(status.INTERNALSERVERERROR).json({
         status: false,
         message: "Internal server error",
@@ -448,6 +452,45 @@ class Users {
         message: "INTERNAL SERVER ERROR",
       })
     }
+  }
+
+  async uploadImage(req, res) {
+    const uploadImage = upload(4).single("photo")
+    uploadImage(req, res, async (err) => {
+      if (err)
+        res.status(status.BADREQUEST).json({
+          success: false,
+          message: err.message,
+          data: {}
+        })
+
+      const file = req.file
+      if (!file)
+        res.status(status.BADREQUEST).json({
+          success: false,
+          message: "Field Photo must be filled",
+          data: {}
+        })
+
+      const bearerToken = req.headers['authorization'].split(' ')[1]
+      const decoded = verify(bearerToken, process.env.SECRET)
+      try {
+        const photo = `${process.env.BASE_URL}/public/images/${req.file.filename}`
+        await updateUser({ photo }, decoded.id)
+
+        res.status(status.CREATED).json({
+          success: true,
+          message: "Success uploading photo",
+          data: { photo },
+        })
+      } catch (error) {
+        res.status(status.INTERNALSERVERERROR).json({
+          success: false,
+          message: "INTERNAL SERVER ERROR",
+          data: {}
+        })
+      }
+    })
   }
 }
 

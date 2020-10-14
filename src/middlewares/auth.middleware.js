@@ -20,10 +20,11 @@ class Auth {
 
     return verify(bearerToken, process.env.SECRET, (err, data) => {
       if (err)
-        return res.status(status.BADREQUEST).json({
-          success: false,
-          message: "Bad Request"
-        })
+        console.log(err)
+      // return res.status(status.BADREQUEST).json({
+      //   success: false,
+      //   message: "Bad Request"
+      // })
 
       return next()
     })

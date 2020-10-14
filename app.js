@@ -19,16 +19,17 @@ const transferRouter = require('./src/routes/transfer.route')
 
 const app = express()
 
+app.use(express.static('public'))
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use("*", cors())
-app.use('/', indexRouter)
-app.use('/auth', authRouter)
-app.use('/users', verify, usersRouter)
-app.use('/topup', topupRouter)
-app.use('/transfer', transferRouter)
+app.use(`${process.env.PREFIX}/`, indexRouter)
+app.use(`${process.env.PREFIX}/auth`, authRouter)
+app.use(`${process.env.PREFIX}/users`, verify, usersRouter)
+app.use(`${process.env.PREFIX}/topup`, topupRouter)
+app.use(`${process.env.PREFIX}/transfer`, transferRouter)
 
 // Handle Error Notfound 
 app.use(statusNotFound)

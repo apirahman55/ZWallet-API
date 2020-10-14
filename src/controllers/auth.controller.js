@@ -32,7 +32,7 @@ class Auth {
           data: {}
         })
 
-      return res.status(status.OK).json({
+      return res.status(status.CREATED).json({
         success: true,
         message: "Login Succesfully",
         data: {
@@ -72,7 +72,7 @@ class Auth {
         password: hashSync(req.body.password, genSaltSync(10))
       })
 
-      return res.status(status.OK).json({
+      return res.status(status.CREATED).json({
         success: true,
         message: "Register Succesfully",
         data: {

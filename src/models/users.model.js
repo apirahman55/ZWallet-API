@@ -7,8 +7,11 @@ class UserModel {
         return query("SELECT id, name, phone, email, balance, photo FROM users")
     }
 
-    findUsers(name) {
-        return query("SELECT id, name, phone, photo, balance FROM users WHERE name LIKE ? ORDER BY name asc", [name + "%"])
+    findUsers(name, limit = 5, offset = 1) {
+        const limitNew = !isNaN(parseInt(limit)) ? parseInt(limit) : 5
+        const offsetNew = !isNaN(parseInt(offset)) ? parseInt(offset) : 5
+
+        return query("SELECT id, name, phone, photo, balance FROM users WHERE name LIKE ? ORDER BY name asc LIMIT ? OFFSET ?", [name + "%", limitNew, (offsetNew - 1) * limitNew])
     }
 
     getUserByEmail(email) {
@@ -16,7 +19,10 @@ class UserModel {
     }
 
     getUsersPaginate(limit = 5, offset = 1) {
-        return query("SELECT id, name, phone, photo, balance FROM users LIMIT ? OFFSET ?", [offset, (parseInt(offset) - 1) * parseInt(limit)])
+        const limitNew = !isNaN(parseInt(limit)) ? parseInt(limit) : 5
+        const offsetNew = !isNaN(parseInt(offset)) ? parseInt(offset) : 5
+
+        return query("SELECT id, name, phone, photo, balance FROM users LIMIT ? OFFSET ?", [limitNew, (offsetNew - 1) * limitNew])
     }
 
     getUserById(id) {
